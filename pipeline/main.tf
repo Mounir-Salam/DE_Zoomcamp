@@ -8,15 +8,16 @@ terraform {
 }
 
 provider "google" {
-  credentials = "keys/de-zoomcamp-key.json"
-  project     = "de-zoomcamp-484617"
-  region      = "europe-north2"
+  credentials = file(var.credentials)
+  project     = var.project
+  region      = var.region
 }
 
 resource "google_storage_bucket" "terraform_bucket" {
-  name          = "de-zoomcamp-484617-terraform-bucket"
-  location      = "EU"
+  name          = var.gcs_bucket_name
+  location      = var.location
   force_destroy = true
+  storage_class = var.gcs_storage_class
 
   lifecycle_rule {
     condition {
@@ -26,4 +27,9 @@ resource "google_storage_bucket" "terraform_bucket" {
       type = "AbortIncompleteMultipartUpload"
     }
   }
+}
+
+resource "google_bigquery_dataset" "de_dataset" {
+  dataset_id = var.bq_dataset_name
+  location   = var.location
 }
