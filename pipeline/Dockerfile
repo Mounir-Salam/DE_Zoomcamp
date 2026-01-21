@@ -21,6 +21,6 @@ COPY pyproject.toml uv.lock ./
 # This way we make sure dependencies we install are the same as the virtual env
 RUN uv sync --locked
 
-COPY ingest_data.py ./
+COPY ingest_data_green.py ./
 
-ENTRYPOINT ["python", "ingest_data.py"]
+ENTRYPOINT ["python", "ingest_data_green.py"]
