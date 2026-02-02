@@ -257,3 +257,4 @@ terraform.rc
 
 # BE CARREFUL OF PUSHING CREDENTIAL FILES
 *.json
+.env_encoded
