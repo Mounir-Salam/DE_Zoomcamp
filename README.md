@@ -1,43 +1,68 @@
-### Extra Flow to Process Multiple months at the same time
+```sql
+-- Create external table of the yellow taxis for 2024
+CREATE OR REPLACE EXTERNAL TABLE `de-zoomcamp-484617.de_dataset.yellow_tripdata_ext`
+OPTIONS (
+  FORMAT = 'PARQUET',
+  uris = ['gs://de-zoomcamp-484617-function_bucket/yellow_tripdata_2024_*.parquet']
+);
+```
 
-```YAML
-id: 12_gcp_range_taxi
-namespace: zoomcamp
-description: Run 08_gcp_taxi for multiple month selections
+### Question 2
+```sql
+-- Distinct PULocationID from regular table
+SELECT DISTINCT PULocationID
+FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
 
-inputs:
-  - id: taxi
-    type: SELECT
-    displayName: Select taxi type
-    values: [yellow, green]
-    defaults: green
+-- Distinct PULocationID from external table
+SELECT DISTINCT PULocationID
+FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata_ext`;
+```
 
-  - id: year
-    type: SELECT
-    displayName: Select year
-    values: ["2019", "2020"]
-    defaults: "2019"
-    allowCustomValue: true
+### Question 3
+```sql
+-- PULocationID from regular table
+SELECT PULocationID
+FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
 
-  - id: month
-    type: MULTISELECT
-    displayName: Select month
-    values: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
-    defaults: ["01"]
+-- PULocationID & DOLocationID from regular table
+SELECT PULocationID, DOLocationID
+FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
+```
 
-tasks:
-  - id: for_each_month
-    type: io.kestra.plugin.core.flow.ForEach
-    values: "{{ inputs.month }}"
-    tasks:
-      - id: call_gcp_taxi_subflow
-        type: io.kestra.plugin.core.flow.Subflow
-        namespace: zoomcamp
-        flowId: 08_gcp_taxi
-        inputs:
-          taxi: "{{ inputs.taxi }}"
-          year: "{{ inputs.year }}"
-          month: "{{ taskrun.value }}"
-        wait: true
-        transmitFailed: true
+### Question 4
+```sql
+-- fare_amount is 0
+SELECT COUNT(1)
+FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`
+WHERE fare_amount = 0;
+```
+
+### Question 5
+```sql
+-- create partitioned and clustered table
+CREATE OR REPLACE TABLE `de-zoomcamp-484617.de_dataset.yellow_tripdata_par_clus`
+PARTITION BY DATE(tpep_dropoff_datetime)
+CLUSTER BY VendorID AS
+  SELECT *
+  FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
+```
+
+### Question 6
+```sql
+-- Distinct VendorID from normal table
+SELECT DISTINCT VendorID
+FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`
+WHERE DATE(tpep_dropoff_datetime) BETWEEN '2024-03-01' AND '2024-03-15';
+
+-- Distinct VendorID from partitioned table
+SELECT DISTINCT VendorID
+FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata_par_clus`
+WHERE DATE(tpep_dropoff_datetime) BETWEEN '2024-03-01' AND '2024-03-15';
+```
+
+### Question 9
+```sql
+-- Select count(*)
+SELECT count(*)
+FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
 ```
