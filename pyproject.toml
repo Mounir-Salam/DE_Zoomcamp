@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "dbt-duckdb>=1.10.0",
+    "dbt-postgres>=1.10.0",
     "functions-framework>=3.10.0",
     "google-api-core>=2.29.0",
     "google-cloud-bigquery>=3.40.0",
