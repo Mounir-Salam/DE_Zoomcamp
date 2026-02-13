@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: postgres_raw
+    description: "Raw postgres data"
+    database: ny_taxi
+    schema: public
+    tables:
+      - name: yellow_taxi_trips_2021_1
+        description: "Raw data from the yellow_taxi_trips table"
+      - name: green_taxi_trips_2025_11
+        description: "Raw data from the green_taxi_trips table"

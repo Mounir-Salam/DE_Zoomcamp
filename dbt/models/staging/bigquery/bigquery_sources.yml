@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: bigquery_raw
+    description: "Raw bigquery data"
+    database: de-zoomcamp-484617
+    schema: de_dataset
+    tables:
+      - name: yellow_tripdata
+        description: "Raw data from the yellow_taxi_trips table"
+      - name: green_tripdata
+        description: "Raw data from the green_taxi_trips table"
