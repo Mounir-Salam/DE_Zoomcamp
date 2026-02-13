@@ -1,8 +1,8 @@
 select
     -- identifiers
     vendorid as vendor_id,
-    ratedcodeid as rated_code_id,
-    puilocationid as pickup_location_id,
+    ratecodeid as rate_code_id,
+    pulocationid as pickup_location_id,
     dolocationid as dropoff_location_id,
 
     -- timestamps
