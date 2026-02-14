@@ -10,3 +10,5 @@ sources:
         description: "Raw data from the yellow_taxi_trips table"
       - name: green_tripdata
         description: "Raw data from the green_taxi_trips table"
+      - name: taxi_zone_lookup
+        description: "Dimensions table for taxi zones"

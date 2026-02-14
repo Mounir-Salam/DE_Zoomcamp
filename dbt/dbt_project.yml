@@ -38,7 +38,30 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   dbt_taxi:
     staging:
+      postgres:
+        +tags: pg_layer  
+      duckdb:
+        +tags: duckdb_layer
+      bigquery:
+        +tags: bq_layer
+      
       +materialized: view
-    marts:
+    
+    intermediate:
+      postgres:
+        +tags: pg_layer
+      duckdb:
+        +tags: duckdb_layer
+      bigquery:
+        +tags: bq_layer
+      
       +materialized: table
+    
+    marts:
+      postgres:
+        +tags: pg_layer
+      bigquery:
+        +tags: bq_layer
+      
+        +materialized: table
 
