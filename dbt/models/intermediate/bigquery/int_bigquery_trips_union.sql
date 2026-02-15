@@ -1,10 +1,14 @@
 with
     green_tripdata as (
-        select *
+        select
+            *,
+            'Green' as service_type
         from {{ ref("stg_bigquery__green_trip") }}
     ),
     yellow_tripdata as (
-        select *
+        select
+            *,
+            'Yellow' as service_type
         from {{ ref("stg_bigquery__yellow_trip") }}
     ),
     trips_unioned as (
