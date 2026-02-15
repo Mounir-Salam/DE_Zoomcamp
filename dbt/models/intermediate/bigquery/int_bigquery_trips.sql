@@ -3,12 +3,12 @@ with
         select * from {{ ref("int_bigquery_trips_union")}}
     ),
     payment_types as (
-        select * from {{ ref("payment_type_lookup")}}
+        select * from {{ ref("dim_payment_bq")}}
     ),
     cleaned_and_enriched as (
         select
             -- Generate a unique key for each trip (surrogate key)
-            {{ dbt_utils.surrogate_key(['u.vendor_id', 'u.pickup_datetime', 'u.pickup_location_id', 'u.service_type']) }} as trip_id,
+            {{ dbt_utils.generate_surrogate_key(['u.vendor_id', 'u.pickup_datetime', 'u.pickup_location_id', 'u.service_type']) }} as trip_id,
 
             -- identifiers
             u.vendor_id,
@@ -41,10 +41,10 @@ with
             
             -- Enrich with payment type description
             coalesce(u.payment_type, 0) as payment_type,
-            coalesce(pt.payment_type_name, 'Unknown') as payment_type_description
+            coalesce(pt.description, 'Unknown') as payment_type_description
         from unioned u
         left join payment_types pt
-            on coalesce(u.payment_type, 0) = pt.payment_type_id
+            on coalesce(u.payment_type, 0) = pt.payment_type
     )
 
 select * from cleaned_and_enriched
