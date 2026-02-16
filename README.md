@@ -1,68 +1,35 @@
-```sql
--- Create external table of the yellow taxis for 2024
-CREATE OR REPLACE EXTERNAL TABLE `de-zoomcamp-484617.de_dataset.yellow_tripdata_ext`
-OPTIONS (
-  FORMAT = 'PARQUET',
-  uris = ['gs://de-zoomcamp-484617-function_bucket/yellow_tripdata_2024_*.parquet']
-);
+Note: dbt still on branch dbt-branch
+
+```SQL
+SELECT count(*) FROM `de-zoomcamp-484617.dbt_prod.fct_monthly_zone_revenue_bq`
+where Extract(year from revenue_month) < 2023
+and Extract(year from revenue_month) > 2018;
 ```
 
-### Question 2
-```sql
--- Distinct PULocationID from regular table
-SELECT DISTINCT PULocationID
-FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
-
--- Distinct PULocationID from external table
-SELECT DISTINCT PULocationID
-FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata_ext`;
+```SQL
+select pickup_zone, service_type
+from `de-zoomcamp-484617.dbt_prod.fct_monthly_zone_revenue_bq`
+where revenue_month = '2020-01-01';
 ```
 
-### Question 3
-```sql
--- PULocationID from regular table
-SELECT PULocationID
-FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
-
--- PULocationID & DOLocationID from regular table
-SELECT PULocationID, DOLocationID
-FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
+```SQL
+-- Zone with highest revenue for Green taxis in 2020
+SELECT
+  pickup_zone,
+  total_amount_revenue
+FROM `de-zoomcamp-484617.dbt_prod.fct_monthly_zone_revenue_bq`
+WHERE 
+  revenue_month = '2020-01-01'
+  AND service_type = 'Green'
+ORDER BY total_amount_revenue DESC
+LIMIT 1;
 ```
 
-### Question 4
-```sql
--- fare_amount is 0
-SELECT COUNT(1)
-FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`
-WHERE fare_amount = 0;
-```
-
-### Question 5
-```sql
--- create partitioned and clustered table
-CREATE OR REPLACE TABLE `de-zoomcamp-484617.de_dataset.yellow_tripdata_par_clus`
-PARTITION BY DATE(tpep_dropoff_datetime)
-CLUSTER BY VendorID AS
-  SELECT *
-  FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
-```
-
-### Question 6
-```sql
--- Distinct VendorID from normal table
-SELECT DISTINCT VendorID
-FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`
-WHERE DATE(tpep_dropoff_datetime) BETWEEN '2024-03-01' AND '2024-03-15';
-
--- Distinct VendorID from partitioned table
-SELECT DISTINCT VendorID
-FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata_par_clus`
-WHERE DATE(tpep_dropoff_datetime) BETWEEN '2024-03-01' AND '2024-03-15';
-```
-
-### Question 9
-```sql
--- Select count(*)
-SELECT count(*)
-FROM `de-zoomcamp-484617.de_dataset.yellow_tripdata`;
+```SQL
+-- Total trips for Green taxis in October 2019
+SELECT
+  sum(total_monthly_trips) as total_trips
+from `de-zoomcamp-484617.dbt_prod.fct_monthly_zone_revenue_bq`
+where service_type = "Green"
+  AND revenue_month = "2019-10-01";
 ```
