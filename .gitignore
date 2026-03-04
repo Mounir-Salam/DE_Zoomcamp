@@ -270,4 +270,7 @@ logs/
 
 # Data directory
 data/
+batch/taxi_zone_lookup
+batch/fhvhv/*
+batch/taxi_data/*
 

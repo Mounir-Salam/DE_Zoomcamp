@@ -71,3 +71,62 @@ SELECT
   SUM(tip_amt)
 FROM `de-zoomcamp-484617.dlt_taxi_dataset.taxi_api`
 ```
+
+
+### Spark
+
+#### Question 2
+```Python
+df = spark.read \
+    .parquet('yellow_tripdata_2025-11.parquet')
+
+df = df.repartition(4)
+df.write.parquet('taxi_data', mode='overwrite')
+```
+
+#### Question 3
+```Python
+# count trips that started on 2025-11-01
+from pyspark.sql.functions import col
+print(df.count())
+print(df.filter(col('tpep_pickup_datetime').cast('date') == '2025-11-15').count())
+```
+
+#### Question 4
+```Python
+# longest trip in hours
+from pyspark.sql.functions import col
+from pyspark.sql import functions as F
+df_duration = df \
+    .withColumn('duration', F.expr("timestampdiff(HOUR, tpep_pickup_datetime, tpep_dropoff_datetime)")) \
+    .withColumn('duration_2', ((F.unix_timestamp(col('tpep_dropoff_datetime')) - F.unix_timestamp(col('tpep_pickup_datetime'))) / 3600).cast("decimal(10,1)"))
+df_duration.orderBy(col('duration').desc()).show(5)
+```
+
+#### Question 6
+```Python
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+zone_schema = StructType(
+    [
+        StructField('LocationID', IntegerType(), True),
+        StructField('Borough', StringType(), True), 
+        StructField('Zone', StringType(), True), 
+        StructField('service_zone', StringType(), True)
+    ]
+)
+
+zones = spark.read \
+    .option("header", "true") \
+    .schema(zone_schema) \
+    .csv('taxi_zone_lookup.csv')
+
+
+df_zone_freq = df \
+    .select('PULocationID') \
+    .join(zones, df.PULocationID == zones.LocationID) \
+    .groupBy('Zone') \
+    .count() \
+    .orderBy('count', ascending=True)
+
+df_zone_freq.limit(5).show()
+```
